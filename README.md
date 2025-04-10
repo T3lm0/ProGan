@@ -1,7 +1,7 @@
 # ProGan Mammographies
 
 Progressive generation of mammography images using Generative Adversarial Networks (ProGAN).  
-This project was developed as a Final Degree Project in GIIC at UNEX.
+This project was developed as a Final Degree Project in GIIIC at UNEX.
 
 ---
 
