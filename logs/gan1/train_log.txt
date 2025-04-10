@@ -1,0 +1,12 @@
+Image size: 4
+	Epochs: 10 - Average loss critic -0.0007474653074674517 - Average loss generator 0.0009842543122924375 - lr crtic 0.0001 -  lr gen 0.0001
+Image size: 8
+	Epochs: 10 - Average loss critic -0.00047184997629896505 - Average loss generator -0.0006838283806203682 - lr crtic 0.0001 -  lr gen 0.0001
+Image size: 16
+	Epochs: 20 - Average loss critic -2.6744191013538306e-05 - Average loss generator -0.00022627901137573097 - lr crtic 0.0001 -  lr gen 0.0001
+Image size: 32
+	Epochs: 20 - Average loss critic -0.00019770297668961507 - Average loss generator -0.0005464770196472455 - lr crtic 0.0001 -  lr gen 0.0001
+Image size: 64
+	Epochs: 15 - Average loss critic 2.480130584626183e-05 - Average loss generator -0.0011777166265564917 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+Image size: 128
+	Epochs: 30 - Average loss critic -1.0683273229163477e-05 - Average loss generator -0.0005821860460077384 - lr crtic 2e-05 -  lr gen 0.0001 - gp 20

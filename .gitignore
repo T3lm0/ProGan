@@ -1,0 +1,16 @@
+# Ignorar imágenes y directorios de imágenes
+128imgs.png
+imgs_128/
+train_imgs/
+
+# Ignorar caché de Python
+__pycache__/
+
+# Ignorar todos los modelos entrenados por defecto
+train_models/*
+
+# Excluir este script y el .gitignore generado
+git.sh
+.gitignore
+!train_models/critic_size_256_0.pth
+!train_models/generator_size_256_0.pth
