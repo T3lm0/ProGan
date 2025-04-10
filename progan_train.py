@@ -25,8 +25,8 @@ torch.backends.cudnn.benchmarks = True
 
 START_TRAIN_AT_IMG_SIZE = 256
 DATASET = '/home/telmo/Escritorio/TFG/Codigo/datos/outDat/'
-CHECKPOINT_GEN = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/generator_size_128_25.pth'
-CHECKPOINT_CRITIC = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/critic_size_128_25.pth'
+CHECKPOINT_GEN = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/generator_size_256_0.pth'
+CHECKPOINT_CRITIC = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/critic_size_256_0.pth'
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 SAVE_MODEL = True
