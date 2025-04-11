@@ -25,15 +25,15 @@ torch.backends.cudnn.benchmarks = True
 
 START_TRAIN_AT_IMG_SIZE = 256
 DATASET = '/home/telmo/Escritorio/TFG/Codigo/datos/outDat/'
-CHECKPOINT_GEN = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/generator_size_256_0.pth'
-CHECKPOINT_CRITIC = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/critic_size_256_0.pth'
+CHECKPOINT_GEN = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/generator_size_256_3.pth'
+CHECKPOINT_CRITIC = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/critic_size_256_3.pth'
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 SAVE_MODEL = True
 LOAD_MODEL = True
 LEARNING_RATE = 1e-4
 LEARNING_RATE_CRITIC = 2e-5
-BATCH_SIZES = [64, 64, 32, 64, 64, 16, 8, 4, 8]
+BATCH_SIZES = [64, 64, 32, 64, 64, 16, 10, 4, 8]
 CHANNELS_IMG = 1
 Z_DIM = 256
 IN_CHANNELS = 512
@@ -41,7 +41,7 @@ CRITIC_ITERATIONS = 3
 LAMBDA_GP = 20
 PROGRESSIVE_EPOCHS = [10, 10, 20, 20, 15, 30, 30, 40, 40]
 FIXED_NOISE = torch.randn(8, Z_DIM, 1, 1).to(DEVICE)
-NUM_WORKERS = 8
+NUM_WORKERS = 2
 
 def plot_to_tensorboard(
     writer, loss_critic, loss_gen, real, fake, tensorboard_step
@@ -114,6 +114,8 @@ def generate_examples(gen, steps, truncation=0.7, n=100):
     gen.train()
     
 
+def worker_init_fn(worker_id):
+    np.random.seed(torch.initial_seed() % 2**32)
 
 def get_loader(image_size):
     transform = transforms.Compose([
@@ -130,6 +132,8 @@ def get_loader(image_size):
         shuffle=True,
         num_workers=NUM_WORKERS,
         pin_memory=True,
+        persistent_workers=True,
+        worker_init_fn=worker_init_fn,
     )
     return loader, dataset
 """ Training of ProGAN using WGAN-GP loss"""
@@ -254,7 +258,7 @@ if __name__ == "__main__":
         print(f"Dataset length: {len(dataset)}")
         total_avg_loss_gen = 0
         total_avg_loss_critic = 0
-        for epoch in range(0, num_epochs):
+        for epoch in range(3, num_epochs):
             print(f"Epoch [{epoch+1}/{num_epochs}]")
             
             tensorboard_step, alpha, avg_loss_critic, avg_loss_gen = train_fn(
@@ -273,7 +277,7 @@ if __name__ == "__main__":
             )
 
             
-            for i in range(2):
+            for i in range(3):
                 x = torch.randn((1, Z_DIM, 1, 1), device=DEVICE)
                 z = gen(x, 1, steps=step)
                 assert z.shape == (1, 1, img_size, img_size)
@@ -285,9 +289,9 @@ if __name__ == "__main__":
                 plt.tight_layout(pad=0)
                 plt.imshow(z.detach().cpu().numpy()[0][0], cmap='gray')
                 os.makedirs('train_imgs', exist_ok=True)
-                plt.savefig(f'train_imgs/mass__size_{img_size}_epoch_{epoch}_.png', bbox_inches='tight', pad_inches=0)
+                plt.savefig(f'train_imgs/mass__size_{img_size}_epoch_{epoch}_{i}.png', bbox_inches='tight', pad_inches=0)
 
-            if SAVE_MODEL and epoch % 5 == 0:
+            if SAVE_MODEL and epoch % 3 == 0 :
                 print("Saving model...")
                 os.makedirs('train_models', exist_ok=True)
                 generator_file = os.path.join('train_models', f"generator_size_{img_size}_{epoch}.pth")

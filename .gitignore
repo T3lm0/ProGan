@@ -16,5 +16,3 @@ logs/*
 # Excluir este script y el .gitignore generado
 git.sh
 .gitignore
-!train_models/critic_size_256_0.pth
-!train_models/generator_size_256_0.pth
