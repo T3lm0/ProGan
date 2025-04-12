@@ -10,3 +10,8 @@ This project was developed as a Final Degree Project in GIIIC at UNEX.
 This project implements and trains a **Progressive Growing GAN (ProGAN)** model for generating synthetic mammography images. The goal is to contribute to the field of medical imaging and deep learning by providing a dataset of synthetic mammogram images that could be used in further research and development.
 
 ---
+
+## Models to download
+You can access and download the required models through the following link:
+
+[Download Models](https://tinyurl.com/tfgtelmo)
