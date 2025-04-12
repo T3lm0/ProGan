@@ -20,6 +20,8 @@ from torch.utils.tensorboard import SummaryWriter
 from math import log2
 from tqdm import tqdm
 import json
+import torch.multiprocessing as mp
+mp.set_start_method('spawn', force=True) # To avoid fork issues with DataLoader
 
 torch.backends.cudnn.benchmarks = True
 
@@ -132,8 +134,6 @@ def get_loader(image_size):
         shuffle=True,
         num_workers=NUM_WORKERS,
         pin_memory=True,
-        persistent_workers=True,
-        worker_init_fn=worker_init_fn,
     )
     return loader, dataset
 """ Training of ProGAN using WGAN-GP loss"""
