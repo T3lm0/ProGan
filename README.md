@@ -11,7 +11,8 @@ This project implements and trains a **Progressive Growing GAN (ProGAN)** model 
 
 ---
 
-## Models to download
+## 📥 Models to download
+
 You can access and download the required models through the following link:
 
-[Download Models](https://tinyurl.com/tfgtelmo)
+[![Download Models](https://img.shields.io/badge/Download-Models-blue)](https://tinyurl.com/tfgtelmo)
