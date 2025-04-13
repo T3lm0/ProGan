@@ -25,23 +25,23 @@ mp.set_start_method('spawn', force=True) # To avoid fork issues with DataLoader
 
 torch.backends.cudnn.benchmarks = True
 
-START_TRAIN_AT_IMG_SIZE = 256
+START_TRAIN_AT_IMG_SIZE = 64
 DATASET = '/home/telmo/Escritorio/TFG/Codigo/datos/outDat/'
-CHECKPOINT_GEN = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/generator_size_256_3.pth'
-CHECKPOINT_CRITIC = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/critic_size_256_3.pth'
+CHECKPOINT_GEN = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/generator_size_64_10.pth'
+CHECKPOINT_CRITIC = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/critic_size_64_10.pth'
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 SAVE_MODEL = True
 LOAD_MODEL = True
 LEARNING_RATE = 1e-4
-LEARNING_RATE_CRITIC = 2e-5
-BATCH_SIZES = [64, 64, 32, 64, 64, 16, 10, 4, 8]
+LEARNING_RATE_CRITIC = 1e-4
+BATCH_SIZES = [64, 64, 32, 32, 16, 8, 4, 2]  # Reducido para tamaños grandes
 CHANNELS_IMG = 1
-Z_DIM = 256
+Z_DIM = 512
 IN_CHANNELS = 512
 CRITIC_ITERATIONS = 3
 LAMBDA_GP = 20
-PROGRESSIVE_EPOCHS = [10, 10, 20, 20, 15, 30, 30, 40, 40]
+PROGRESSIVE_EPOCHS = [10, 10, 15, 20, 20, 40, 50, 60, 80]  # Más épocas para tamaños grandes
 FIXED_NOISE = torch.randn(8, Z_DIM, 1, 1).to(DEVICE)
 NUM_WORKERS = 2
 
@@ -89,7 +89,7 @@ def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
 
 def load_checkpoint(checkpoint_file, model, optimizer, lr):
     print("=> Loading checkpoint")
-    checkpoint = torch.load(checkpoint_file, map_location="cuda")
+    checkpoint = torch.load(checkpoint_file, map_location="cuda", weights_only=True)
     model.load_state_dict(checkpoint["state_dict"])
     optimizer.load_state_dict(checkpoint["optimizer"])
     for param_group in optimizer.param_groups:
@@ -116,8 +116,6 @@ def generate_examples(gen, steps, truncation=0.7, n=100):
     gen.train()
     
 
-def worker_init_fn(worker_id):
-    np.random.seed(torch.initial_seed() % 2**32)
 
 def get_loader(image_size):
     transform = transforms.Compose([
@@ -162,7 +160,7 @@ def train_fn(
         # which is equivalent to minimizing the negative of the expression
         noise = torch.randn(cur_batch_size, Z_DIM, 1, 1).to(DEVICE)
 
-        with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
+        with torch.amp.autocast(device_type='cuda', dtype=torch.float32):
             fake = gen(noise, alpha, step)
             critic_real = critic(real, alpha, step)
             critic_fake = critic(fake.detach(), alpha, step)
@@ -179,7 +177,7 @@ def train_fn(
         scaler_critic.update()
 
         # Train Generator: max E[critic(gen_fake)] <-> min -E[critic(gen_fake)]
-        with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
+        with torch.amp.autocast(device_type='cuda', dtype=torch.float32):
             gen_fake = critic(fake, alpha, step)
             loss_gen = -torch.mean(gen_fake)
 
@@ -236,7 +234,7 @@ if __name__ == "__main__":
     scaler_critic = torch.amp.GradScaler()
     scaler_gen = torch.amp.GradScaler()
 
-    writer = SummaryWriter(f"logs/gan1")
+    writer = SummaryWriter(f"logs/gan2")
     if LOAD_MODEL:
         load_checkpoint(
             CHECKPOINT_GEN, gen, opt_gen, LEARNING_RATE,
@@ -258,7 +256,7 @@ if __name__ == "__main__":
         print(f"Dataset length: {len(dataset)}")
         total_avg_loss_gen = 0
         total_avg_loss_critic = 0
-        for epoch in range(3, num_epochs):
+        for epoch in range(10, num_epochs):
             print(f"Epoch [{epoch+1}/{num_epochs}]")
             
             tensorboard_step, alpha, avg_loss_critic, avg_loss_gen = train_fn(
@@ -288,14 +286,14 @@ if __name__ == "__main__":
                 plt.axis('off')
                 plt.tight_layout(pad=0)
                 plt.imshow(z.detach().cpu().numpy()[0][0], cmap='gray')
-                os.makedirs('train_imgs', exist_ok=True)
-                plt.savefig(f'train_imgs/mass__size_{img_size}_epoch_{epoch}_{i}.png', bbox_inches='tight', pad_inches=0)
+                os.makedirs('train_imgs/gan2', exist_ok=True)
+                plt.savefig(f'train_imgs/gan2/mass__size_{img_size}_epoch_{epoch}_{i}.png', bbox_inches='tight', pad_inches=0)
 
-            if SAVE_MODEL and epoch % 3 == 0 :
+            if SAVE_MODEL and (epoch % 3 == 0 or epoch % 10 == 0):
                 print("Saving model...")
                 os.makedirs('train_models', exist_ok=True)
-                generator_file = os.path.join('train_models', f"generator_size_{img_size}_{epoch}.pth")
-                critic_file = os.path.join('train_models', f"critic_size_{img_size}_{epoch}.pth")
+                generator_file = os.path.join('train_models/gan2', f"generator_size_{img_size}_{epoch}.pth")
+                critic_file = os.path.join('train_models/gan2', f"critic_size_{img_size}_{epoch}.pth")
                 save_checkpoint(gen, opt_gen, filename=generator_file)
                 save_checkpoint(critic, opt_critic, filename=critic_file)
             # Accumulate average losses for critic and generator
@@ -307,7 +305,7 @@ if __name__ == "__main__":
         overall_avg_loss_gen = total_avg_loss_gen / num_epochs
 
         # Save training log
-        log_file = os.path.join("logs/gan1", "train_log.txt")
+        log_file = os.path.join("logs/gan2", "train_log.txt")
         with open(log_file, "a") as f:
             f.write(f"Image size: {img_size}\n")
             f.write(f"\tEpochs: {num_epochs} - Average loss critic {overall_avg_loss_critic} - Average loss generator {overall_avg_loss_gen} - lr crtic {LEARNING_RATE_CRITIC} -  lr gen {LEARNING_RATE} - gp {LAMBDA_GP}\n")
