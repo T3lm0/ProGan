@@ -25,16 +25,16 @@ mp.set_start_method('spawn', force=True) # To avoid fork issues with DataLoader
 
 torch.backends.cudnn.benchmarks = True
 
-START_TRAIN_AT_IMG_SIZE = 64
+START_TRAIN_AT_IMG_SIZE = 128
 DATASET = '/home/telmo/Escritorio/TFG/Codigo/datos/outDat/'
-CHECKPOINT_GEN = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/generator_size_64_10.pth'
-CHECKPOINT_CRITIC = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/critic_size_64_10.pth'
+CHECKPOINT_GEN = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/generator_size_128_3.pth'
+CHECKPOINT_CRITIC = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/critic_size_128_3.pth'
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 SAVE_MODEL = True
 LOAD_MODEL = True
 LEARNING_RATE = 1e-4
-LEARNING_RATE_CRITIC = 1e-4
+LEARNING_RATE_CRITIC = 1e-5
 BATCH_SIZES = [64, 64, 32, 32, 16, 8, 4, 2]  # Reducido para tamaños grandes
 CHANNELS_IMG = 1
 Z_DIM = 512
@@ -252,12 +252,16 @@ if __name__ == "__main__":
         alpha = 1
         img_size = 4 * 2 ** step
         loader, dataset = get_loader(img_size)
-        print(f"Current image size: {img_size}")
-        print(f"Dataset length: {len(dataset)}")
+        print(f"\nEntrenando en tamaño {img_size}x{img_size}")
+        print(f"Batch size: {BATCH_SIZES[step]}")
+        print(f"Épocas programadas: {num_epochs}")
+        log_file = os.path.join("logs/gan2", "train_log.txt")
+        with open(log_file, "a") as f:
+            f.write(f"Image size: {img_size}\n")
         total_avg_loss_gen = 0
         total_avg_loss_critic = 0
-        for epoch in range(10, num_epochs):
-            print(f"Epoch [{epoch+1}/{num_epochs}]")
+        for epoch in range(4, num_epochs):
+            print(f"\nÉpoca [{epoch+1}/{num_epochs}] - Tamaño {img_size}")
             
             tensorboard_step, alpha, avg_loss_critic, avg_loss_gen = train_fn(
                 critic,
@@ -289,7 +293,7 @@ if __name__ == "__main__":
                 os.makedirs('train_imgs/gan2', exist_ok=True)
                 plt.savefig(f'train_imgs/gan2/mass__size_{img_size}_epoch_{epoch}_{i}.png', bbox_inches='tight', pad_inches=0)
 
-            if SAVE_MODEL and (epoch % 3 == 0 or epoch % 10 == 0):
+            if SAVE_MODEL and (epoch % 3 == 0 or epoch % 10 == 0 or epoch == num_epochs - 1):
                 print("Saving model...")
                 os.makedirs('train_models', exist_ok=True)
                 generator_file = os.path.join('train_models/gan2', f"generator_size_{img_size}_{epoch}.pth")
@@ -299,15 +303,16 @@ if __name__ == "__main__":
             # Accumulate average losses for critic and generator
             total_avg_loss_critic += avg_loss_critic
             total_avg_loss_gen += avg_loss_gen
-
+            torch.cuda.empty_cache()
             # Calculate and print overall average losses after all epochs
+            with open(log_file, "a") as f:
+                f.write(f"\tEpoch {epoch} - Average loss critic {avg_loss_critic} - Average loss generator {avg_loss_gen} - lr crtic {LEARNING_RATE_CRITIC} -  lr gen {LEARNING_RATE} - gp {LAMBDA_GP}\n")
         overall_avg_loss_critic = total_avg_loss_critic / num_epochs
         overall_avg_loss_gen = total_avg_loss_gen / num_epochs
-
+        
         # Save training log
-        log_file = os.path.join("logs/gan2", "train_log.txt")
+        
         with open(log_file, "a") as f:
-            f.write(f"Image size: {img_size}\n")
-            f.write(f"\tEpochs: {num_epochs} - Average loss critic {overall_avg_loss_critic} - Average loss generator {overall_avg_loss_gen} - lr crtic {LEARNING_RATE_CRITIC} -  lr gen {LEARNING_RATE} - gp {LAMBDA_GP}\n")
+            f.write(f"\t\tEpochs: {num_epochs} - Average loss critic {overall_avg_loss_critic} - Average loss generator {overall_avg_loss_gen} - lr crtic {LEARNING_RATE_CRITIC} -  lr gen {LEARNING_RATE} - gp {LAMBDA_GP}\n")
             
         step += 1
