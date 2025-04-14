@@ -12,6 +12,7 @@ train_models/*
 # Ignorar todo en logs, excepto el archivo .txt
 logs/*
 !logs/gan1/*.txt
+!logs/gan2/*.txt
 
 # Excluir este script y el .gitignore generado
 git.sh

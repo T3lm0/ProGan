@@ -1,0 +1,38 @@
+Z_DIM = 512
+Image size: 4
+	Epochs: 10 - Average loss critic -0.0019171200185648606 - Average loss generator 0.0024062992012667877 - lr crtic 0.0001 -  lr gen 0.0001 - gp 20
+Image size: 8
+	Epochs: 10 - Average loss critic -0.00011404413799537676 - Average loss generator -0.0008465778604846135 - lr crtic 0.0001 -  lr gen 0.0001 - gp 20
+Image size: 16
+	Epochs: 15 - Average loss critic -0.00024053203254635684 - Average loss generator -0.001061224266246927 - lr crtic 0.0001 -  lr gen 0.0001 - gp 20
+Image size: 32
+	Epochs: 20 - Average loss critic -0.0004742865299640236 - Average loss generator 0.0008897133651396711 - lr crtic 0.0001 -  lr gen 0.0001 - gp 20
+Image size: 64
+	Epochs: 20 - Average loss critic 0.00032428281133082767 - Average loss generator 1.0588135247487367e-05 - lr crtic 0.0001 -  lr gen 0.0001 - gp 20
+Image size: 128
+	Epoch 4 - Average loss critic -0.0003120144022153189 - Average loss generator 0.00157745325593256 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 5 - Average loss critic 0.001519243248173448 - Average loss generator -0.0004310850097647316 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 6 - Average loss critic 0.0004622362536624667 - Average loss generator 0.00018724870695721629 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 7 - Average loss critic -0.0015236579003881235 - Average loss generator -0.0021011424567157827 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 8 - Average loss critic 9.375738211202956e-05 - Average loss generator -0.0014501268467244275 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 9 - Average loss critic 0.00015633390993926788 - Average loss generator -0.0005722852375803284 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 10 - Average loss critic -0.0004271585712388193 - Average loss generator 0.0003257934396663371 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 11 - Average loss critic 0.0010103396984118209 - Average loss generator -0.00019674879047295527 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 12 - Average loss critic 0.00035193534589762987 - Average loss generator -0.0011775045540070367 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 13 - Average loss critic 0.0002987075256798809 - Average loss generator -0.0004378878260663857 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 14 - Average loss critic -0.00022175407311955436 - Average loss generator -0.00021504396158303254 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 15 - Average loss critic 0.0021880471455129583 - Average loss generator -0.0012447988959051128 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 16 - Average loss critic 0.00013410157809771195 - Average loss generator -0.00025510972919732123 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 17 - Average loss critic -5.6645307314758836e-05 - Average loss generator -0.00032659182085086367 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 18 - Average loss critic 0.0005176105390387899 - Average loss generator 6.085742413299704e-05 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 19 - Average loss critic 0.00020087149159969713 - Average loss generator -0.0009394916215043436 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 20 - Average loss critic -0.00040757952724742664 - Average loss generator -0.0003066185067911617 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 21 - Average loss critic -0.0001768852634228923 - Average loss generator -0.0007231624958386745 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 22 - Average loss critic 0.0005556357200028467 - Average loss generator -0.00029070179830948696 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 23 - Average loss critic 2.909413554140779e-06 - Average loss generator -0.00035826662943569783 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 24 - Average loss critic 0.0008090259180135972 - Average loss generator -0.0007014351371300583 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 25 - Average loss critic 0.0004790699244662247 - Average loss generator 1.2622155964514131e-05 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 26 - Average loss critic 9.592456756207646e-05 - Average loss generator 0.000385116986424359 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 27 - Average loss critic 0.0004527839271469474 - Average loss generator -0.0009760525801701065 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 28 - Average loss critic 0.00038374573062119495 - Average loss generator -3.7511492222198555e-05 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
+	Epoch 29 - Average loss critic 0.00017797022150606965 - Average loss generator -0.00020752812297338623 - lr crtic 1e-05 -  lr gen 0.0001 - gp 20
