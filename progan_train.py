@@ -25,22 +25,22 @@ mp.set_start_method('spawn', force=True) # To avoid fork issues with DataLoader
 
 torch.backends.cudnn.benchmarks = True
 
-START_TRAIN_AT_IMG_SIZE = 128
+START_TRAIN_AT_IMG_SIZE = 256
 DATASET = '/home/telmo/Escritorio/TFG/Codigo/datos/outDat/'
-CHECKPOINT_GEN = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/generator_size_128_3.pth'
-CHECKPOINT_CRITIC = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/critic_size_128_3.pth'
+CHECKPOINT_GEN = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/generator_size_128_39.pth'
+CHECKPOINT_CRITIC = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/critic_size_128_39.pth'
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 SAVE_MODEL = True
 LOAD_MODEL = True
 LEARNING_RATE = 1e-4
-LEARNING_RATE_CRITIC = 1e-5
-BATCH_SIZES = [64, 64, 32, 32, 16, 8, 4, 2]  # Reducido para tamaños grandes
+LEARNING_RATE_CRITIC = 2e-5
+BATCH_SIZES = [64, 64, 32, 32, 16, 16, 8, 2]  # Reducido para tamaños grandes
 CHANNELS_IMG = 1
 Z_DIM = 512
 IN_CHANNELS = 512
-CRITIC_ITERATIONS = 3
-LAMBDA_GP = 20
+CRITIC_ITERATIONS = 5
+LAMBDA_GP = 10
 PROGRESSIVE_EPOCHS = [10, 10, 15, 20, 20, 40, 50, 60, 80]  # Más épocas para tamaños grandes
 FIXED_NOISE = torch.randn(8, Z_DIM, 1, 1).to(DEVICE)
 NUM_WORKERS = 2
@@ -260,7 +260,7 @@ if __name__ == "__main__":
             f.write(f"Image size: {img_size}\n")
         total_avg_loss_gen = 0
         total_avg_loss_critic = 0
-        for epoch in range(4, num_epochs):
+        for epoch in range(0, num_epochs):
             print(f"\nÉpoca [{epoch+1}/{num_epochs}] - Tamaño {img_size}")
             
             tensorboard_step, alpha, avg_loss_critic, avg_loss_gen = train_fn(
@@ -306,13 +306,13 @@ if __name__ == "__main__":
             torch.cuda.empty_cache()
             # Calculate and print overall average losses after all epochs
             with open(log_file, "a") as f:
-                f.write(f"\tEpoch {epoch} - Average loss critic {avg_loss_critic} - Average loss generator {avg_loss_gen} - lr crtic {LEARNING_RATE_CRITIC} -  lr gen {LEARNING_RATE} - gp {LAMBDA_GP}\n")
+                f.write(f"\t\tEpoch {epoch} - Average loss critic {avg_loss_critic} - Average loss generator {avg_loss_gen} - lr crtic {LEARNING_RATE_CRITIC} -  lr gen {LEARNING_RATE} - gp {LAMBDA_GP}\n")
         overall_avg_loss_critic = total_avg_loss_critic / num_epochs
         overall_avg_loss_gen = total_avg_loss_gen / num_epochs
         
         # Save training log
         
         with open(log_file, "a") as f:
-            f.write(f"\t\tEpochs: {num_epochs} - Average loss critic {overall_avg_loss_critic} - Average loss generator {overall_avg_loss_gen} - lr crtic {LEARNING_RATE_CRITIC} -  lr gen {LEARNING_RATE} - gp {LAMBDA_GP}\n")
+            f.write(f"\tEpochs: {num_epochs} - Average loss critic {overall_avg_loss_critic} - Average loss generator {overall_avg_loss_gen} - lr crtic {LEARNING_RATE_CRITIC} -  lr gen {LEARNING_RATE} - gp {LAMBDA_GP}\n")
             
         step += 1
