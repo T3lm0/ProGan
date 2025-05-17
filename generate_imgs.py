@@ -7,12 +7,12 @@ from math import log2
 import numpy as np
 from PIL import Image
 
-Z_DIM = 256
+Z_DIM = 512
 
 def generate_images(model, output_dir, num_images):
     """Generate images using the GAN model and save them to the output directory."""
     os.makedirs(output_dir, exist_ok=True)
-    step = int(log2(128 / 4))
+    step = int(log2(256 / 4))
     for i in range(num_images):
         with torch.no_grad():
             noise = torch.randn((1, Z_DIM, 1, 1), device='cpu')

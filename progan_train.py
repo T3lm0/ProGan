@@ -21,29 +21,34 @@ from math import log2
 from tqdm import tqdm
 import json
 import torch.multiprocessing as mp
+from datetime import datetime
+
 mp.set_start_method('spawn', force=True) # To avoid fork issues with DataLoader
 
 torch.backends.cudnn.benchmarks = True
 
 START_TRAIN_AT_IMG_SIZE = 256
+CURRENT_IMG_SIZE = 256
 DATASET = '/home/telmo/Escritorio/TFG/Codigo/datos/outDat/'
-CHECKPOINT_GEN = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/generator_size_128_39.pth'
-CHECKPOINT_CRITIC = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/critic_size_128_39.pth'
+CHECKPOINT_GEN = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/generator_size_256_33.pth'
+CHECKPOINT_CRITIC = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/critic_size_256_33.pth'
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 SAVE_MODEL = True
 LOAD_MODEL = True
 LEARNING_RATE = 1e-4
-LEARNING_RATE_CRITIC = 2e-5
+LEARNING_RATE_CRITIC = 3e-4
 BATCH_SIZES = [64, 64, 32, 32, 16, 16, 8, 2]  # Reducido para tamaños grandes
 CHANNELS_IMG = 1
 Z_DIM = 512
 IN_CHANNELS = 512
 CRITIC_ITERATIONS = 5
-LAMBDA_GP = 10
+LAMBDA_GP = 20
 PROGRESSIVE_EPOCHS = [10, 10, 15, 20, 20, 40, 50, 60, 80]  # Más épocas para tamaños grandes
 FIXED_NOISE = torch.randn(8, Z_DIM, 1, 1).to(DEVICE)
 NUM_WORKERS = 2
+START = 34 # Epoch to start training
+
 
 def plot_to_tensorboard(
     writer, loss_critic, loss_gen, real, fake, tensorboard_step
@@ -152,6 +157,8 @@ def train_fn(
     scaler_critic,
 ):
     loop = tqdm(loader, leave=True)
+    avg_loss_critic, avg_loss_gen = 0, 0
+    total_batches = 0
     for batch_idx, (real, _) in enumerate(loop):
         real = real.to(DEVICE)
         cur_batch_size = real.shape[0]
@@ -210,11 +217,12 @@ def train_fn(
             loss_critic=loss_critic.item(),
             loss_gen=loss_gen.item(),
         )
-        if loss_critic < -5:
-            opt_critic.param_groups[0]['lr'] *= 0.7  # Reduce 30%
             
-        avg_loss_critic = loss_critic.item() / len(loader)
-        avg_loss_gen = loss_gen.item() / len(loader)
+        total_batches += 1
+        avg_loss_critic += loss_critic.item()
+        avg_loss_gen += loss_gen.item()
+    avg_loss_critic /= total_batches
+    avg_loss_gen /= total_batches
     return tensorboard_step, alpha, avg_loss_critic, avg_loss_gen
 
 
@@ -240,7 +248,7 @@ if __name__ == "__main__":
             CHECKPOINT_GEN, gen, opt_gen, LEARNING_RATE,
         )
         load_checkpoint(
-            CHECKPOINT_CRITIC, critic, opt_critic, LEARNING_RATE,
+            CHECKPOINT_CRITIC, critic, opt_critic, LEARNING_RATE_CRITIC,
         )
     gen.train()
     critic.train()
@@ -251,16 +259,18 @@ if __name__ == "__main__":
         # alpha = 1e-5
         alpha = 1
         img_size = 4 * 2 ** step
+        CURRENT_IMG_SIZE = img_size
         loader, dataset = get_loader(img_size)
         print(f"\nEntrenando en tamaño {img_size}x{img_size}")
         print(f"Batch size: {BATCH_SIZES[step]}")
         print(f"Épocas programadas: {num_epochs}")
         log_file = os.path.join("logs/gan2", "train_log.txt")
         with open(log_file, "a") as f:
-            f.write(f"Image size: {img_size}\n")
+            f.write(f"Image size: {img_size}\n"
+                    f"\tEpocas {num_epochs}\n")
         total_avg_loss_gen = 0
         total_avg_loss_critic = 0
-        for epoch in range(0, num_epochs):
+        for epoch in range(START, num_epochs):
             print(f"\nÉpoca [{epoch+1}/{num_epochs}] - Tamaño {img_size}")
             
             tensorboard_step, alpha, avg_loss_critic, avg_loss_gen = train_fn(
@@ -306,13 +316,27 @@ if __name__ == "__main__":
             torch.cuda.empty_cache()
             # Calculate and print overall average losses after all epochs
             with open(log_file, "a") as f:
-                f.write(f"\t\tEpoch {epoch} - Average loss critic {avg_loss_critic} - Average loss generator {avg_loss_gen} - lr crtic {LEARNING_RATE_CRITIC} -  lr gen {LEARNING_RATE} - gp {LAMBDA_GP}\n")
+                f.write(
+                    f"\t[Epoch {epoch+1}/{num_epochs}] "
+                    f"Loss Critic: {avg_loss_critic:.4f} | "
+                    f"Loss Gen: {avg_loss_gen:.4f} | "
+                    f"LR Critic: {opt_critic.param_groups[0]['lr']:.2e} | "
+                    f"LR Gen: {opt_gen.param_groups[0]['lr']:.2e} | "
+                    f"GP λ: {LAMBDA_GP}\n"
+                )        
         overall_avg_loss_critic = total_avg_loss_critic / num_epochs
         overall_avg_loss_gen = total_avg_loss_gen / num_epochs
         
         # Save training log
         
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(log_file, "a") as f:
-            f.write(f"\tEpochs: {num_epochs} - Average loss critic {overall_avg_loss_critic} - Average loss generator {overall_avg_loss_gen} - lr crtic {LEARNING_RATE_CRITIC} -  lr gen {LEARNING_RATE} - gp {LAMBDA_GP}\n")
-            
+            f.write("\n" + "="*80 + "\n")
+            f.write(f"[{timestamp}] Summary for image size {img_size}x{img_size} ({num_epochs} epochs)\n")
+            f.write(f"→ Avg Loss Critic: {overall_avg_loss_critic:.4f}\n")
+            f.write(f"→ Avg Loss Gen:    {overall_avg_loss_gen:.4f}\n")
+            f.write(f"→ LR Critic:       {opt_critic.param_groups[0]['lr']:.2e}\n")
+            f.write(f"→ LR Gen:          {opt_gen.param_groups[0]['lr']:.2e}\n")
+            f.write(f"→ GP λ:            {LAMBDA_GP}\n")
+            f.write("="*80 + "\n\n")            
         step += 1
