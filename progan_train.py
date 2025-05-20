@@ -27,27 +27,27 @@ mp.set_start_method('spawn', force=True) # To avoid fork issues with DataLoader
 
 torch.backends.cudnn.benchmarks = True
 
-START_TRAIN_AT_IMG_SIZE = 256
-CURRENT_IMG_SIZE = 256
-DATASET = '/home/telmo/Escritorio/TFG/Codigo/datos/outDat/'
-CHECKPOINT_GEN = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/generator_size_256_33.pth'
-CHECKPOINT_CRITIC = '/home/telmo/Escritorio/TFG/Codigo/ProGAN/train_models/gan2/critic_size_256_33.pth'
+START_TRAIN_AT_IMG_SIZE = 512
+CURRENT_IMG_SIZE = 512
+DATASET = '/home/telmo/outDat/'
+CHECKPOINT_GEN = '/home/telmo/train_models/gan2/generator_size_256_59.pth'
+CHECKPOINT_CRITIC = '/home/telmo/train_models/gan2/critic_size_256_59.pth'
 
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+DEVICE = "cuda:1" if torch.cuda.is_available() else "cpu"
 SAVE_MODEL = True
 LOAD_MODEL = True
 LEARNING_RATE = 1e-4
 LEARNING_RATE_CRITIC = 3e-4
-BATCH_SIZES = [64, 64, 32, 32, 16, 16, 8, 2]  # Reducido para tamaños grandes
+BATCH_SIZES = [64, 64, 32, 32, 16, 16, 32, 16]  # Reducido para tamaños grandes
 CHANNELS_IMG = 1
 Z_DIM = 512
 IN_CHANNELS = 512
-CRITIC_ITERATIONS = 5
+CRITIC_ITERATIONS = 9
 LAMBDA_GP = 20
-PROGRESSIVE_EPOCHS = [10, 10, 15, 20, 20, 40, 50, 60, 80]  # Más épocas para tamaños grandes
+PROGRESSIVE_EPOCHS = [10, 10, 15, 20, 20, 40, 60, 80, 80]  # Más épocas para tamaños grandes
 FIXED_NOISE = torch.randn(8, Z_DIM, 1, 1).to(DEVICE)
-NUM_WORKERS = 2
-START = 34 # Epoch to start training
+NUM_WORKERS = 0
+START = 0 # Epoch to start training
 
 
 def plot_to_tensorboard(
@@ -94,7 +94,7 @@ def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
 
 def load_checkpoint(checkpoint_file, model, optimizer, lr):
     print("=> Loading checkpoint")
-    checkpoint = torch.load(checkpoint_file, map_location="cuda", weights_only=True)
+    checkpoint = torch.load(checkpoint_file, map_location="cuda:1", weights_only=True)
     model.load_state_dict(checkpoint["state_dict"])
     optimizer.load_state_dict(checkpoint["optimizer"])
     for param_group in optimizer.param_groups:
@@ -167,7 +167,7 @@ def train_fn(
         # which is equivalent to minimizing the negative of the expression
         noise = torch.randn(cur_batch_size, Z_DIM, 1, 1).to(DEVICE)
 
-        with torch.amp.autocast(device_type='cuda', dtype=torch.float32):
+        with torch.amp.autocast(device_type='cuda:1', dtype=torch.float32):
             fake = gen(noise, alpha, step)
             critic_real = critic(real, alpha, step)
             critic_fake = critic(fake.detach(), alpha, step)
@@ -184,7 +184,7 @@ def train_fn(
         scaler_critic.update()
 
         # Train Generator: max E[critic(gen_fake)] <-> min -E[critic(gen_fake)]
-        with torch.amp.autocast(device_type='cuda', dtype=torch.float32):
+        with torch.amp.autocast(device_type='cuda:1', dtype=torch.float32):
             gen_fake = critic(fake, alpha, step)
             loss_gen = -torch.mean(gen_fake)
 
