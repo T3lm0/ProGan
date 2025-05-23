@@ -30,24 +30,24 @@ torch.backends.cudnn.benchmarks = True
 START_TRAIN_AT_IMG_SIZE = 512
 CURRENT_IMG_SIZE = 512
 DATASET = '/home/telmo/outDat/'
-CHECKPOINT_GEN = '/home/telmo/train_models/gan2/generator_size_256_59.pth'
-CHECKPOINT_CRITIC = '/home/telmo/train_models/gan2/critic_size_256_59.pth'
+CHECKPOINT_GEN = '/home/telmo/train_models/gan2/generator_size_512_18.pth'
+CHECKPOINT_CRITIC = '/home/telmo/train_models/gan2/critic_size_512_18.pth'
 
 DEVICE = "cuda:1" if torch.cuda.is_available() else "cpu"
 SAVE_MODEL = True
 LOAD_MODEL = True
 LEARNING_RATE = 1e-4
 LEARNING_RATE_CRITIC = 3e-4
-BATCH_SIZES = [64, 64, 32, 32, 16, 16, 32, 16]  # Reducido para tamaños grandes
+BATCH_SIZES = [64, 64, 32, 32, 16, 16, 32, 24]  # Reducido para tamaños grandes
 CHANNELS_IMG = 1
 Z_DIM = 512
 IN_CHANNELS = 512
-CRITIC_ITERATIONS = 9
+CRITIC_ITERATIONS = 13
 LAMBDA_GP = 20
 PROGRESSIVE_EPOCHS = [10, 10, 15, 20, 20, 40, 60, 80, 80]  # Más épocas para tamaños grandes
 FIXED_NOISE = torch.randn(8, Z_DIM, 1, 1).to(DEVICE)
 NUM_WORKERS = 0
-START = 0 # Epoch to start training
+START = 19 # Epoch to start training
 
 
 def plot_to_tensorboard(
