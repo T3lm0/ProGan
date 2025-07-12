@@ -1,6 +1,6 @@
-<div style="overflow: auto; margin-bottom: 20px;">
-    <img src="images_md/epcc.png" alt="EPCC Logo" title="EPCC Logo" width="120" style="float: left; margin-right: 20px; margin-bottom: 10px;"/>
-    <img src="images_md/UEx.png" alt="UEX Logo" title="UEX Logo" width="120" style="float: right; margin-left: 20px; margin-bottom: 10px;"/>
+<div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: 20px;">
+    <img src="images_md/epcc.png" alt="EPCC Logo" title="EPCC Logo" width="120" />
+    <img src="images_md/UEx.png" alt="UEX Logo" title="UEX Logo" width="120" />
 </div>
 
 # ProGan - Data augmentation for tumor lesion detection in mammography images
