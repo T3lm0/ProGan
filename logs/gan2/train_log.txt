@@ -247,3 +247,60 @@ Image size: 512
 	[Epoch 49/80] Loss Critic: -4.4017 | Loss Gen: 9.6481 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
 	[Epoch 50/80] Loss Critic: -4.5067 | Loss Gen: 9.8124 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
 	[Epoch 51/80] Loss Critic: -4.2375 | Loss Gen: 9.2102 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+Image size: 512
+	Epocas 80
+	[Epoch 52/80] Loss Critic: -4.2624 | Loss Gen: 9.3134 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 53/80] Loss Critic: -4.3592 | Loss Gen: 9.3208 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 54/80] Loss Critic: -4.5595 | Loss Gen: 9.8615 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 55/80] Loss Critic: -4.4230 | Loss Gen: 9.4884 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 56/80] Loss Critic: -4.6244 | Loss Gen: 9.8213 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 57/80] Loss Critic: -4.4026 | Loss Gen: 9.7508 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 58/80] Loss Critic: -4.5401 | Loss Gen: 9.6635 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 59/80] Loss Critic: -4.6438 | Loss Gen: 9.7584 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 60/80] Loss Critic: -4.3452 | Loss Gen: 9.7245 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 61/80] Loss Critic: -4.5702 | Loss Gen: 9.5832 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 62/80] Loss Critic: -4.5861 | Loss Gen: 9.8945 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 63/80] Loss Critic: -4.5218 | Loss Gen: 9.9510 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 64/80] Loss Critic: -4.6054 | Loss Gen: 10.0949 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 65/80] Loss Critic: -4.5255 | Loss Gen: 9.7635 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+Image size: 512
+	Epocas 80
+	[Epoch 56/80] Loss Critic: -4.6525 | Loss Gen: 9.9058 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 57/80] Loss Critic: -4.7231 | Loss Gen: 10.2755 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 58/80] Loss Critic: -4.5717 | Loss Gen: 10.0703 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 59/80] Loss Critic: -4.3858 | Loss Gen: 9.5912 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 60/80] Loss Critic: -4.5579 | Loss Gen: 9.9138 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 61/80] Loss Critic: -4.3021 | Loss Gen: 9.5546 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 62/80] Loss Critic: -4.5621 | Loss Gen: 9.7087 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 63/80] Loss Critic: -4.5020 | Loss Gen: 9.6996 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 64/80] Loss Critic: -4.5599 | Loss Gen: 9.8954 | LR Critic: 3.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+Image size: 512
+	Epocas 80
+Image size: 512
+	Epocas 80
+	[Epoch 65/80] Loss Critic: -5.5120 | Loss Gen: 9.6339 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 66/80] Loss Critic: -5.1370 | Loss Gen: 9.2939 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 67/80] Loss Critic: -5.1827 | Loss Gen: 9.5491 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 68/80] Loss Critic: -5.0989 | Loss Gen: 9.2316 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 69/80] Loss Critic: -5.0730 | Loss Gen: 9.1704 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 70/80] Loss Critic: -5.1480 | Loss Gen: 9.5024 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 71/80] Loss Critic: -4.9437 | Loss Gen: 9.0823 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 72/80] Loss Critic: -4.6416 | Loss Gen: 8.9407 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 73/80] Loss Critic: -4.8106 | Loss Gen: 8.9626 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 74/80] Loss Critic: -4.5671 | Loss Gen: 8.8292 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 75/80] Loss Critic: -4.8757 | Loss Gen: 9.1702 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 76/80] Loss Critic: -4.5619 | Loss Gen: 8.9727 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 77/80] Loss Critic: -4.4808 | Loss Gen: 8.5812 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 78/80] Loss Critic: -4.4440 | Loss Gen: 8.6193 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 79/80] Loss Critic: -4.4496 | Loss Gen: 8.4932 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+	[Epoch 80/80] Loss Critic: -4.4495 | Loss Gen: 9.0983 | LR Critic: 2.00e-04 | LR Gen: 1.00e-04 | GP λ: 20
+
+================================================================================
+[2025-05-25 12:45:00] Summary for image size 512x512 (80 epochs)
+→ Avg Loss Critic: -0.9672
+→ Avg Loss Gen:    1.8141
+→ LR Critic:       2.00e-04
+→ LR Gen:          1.00e-04
+→ GP λ:            20
+================================================================================
+

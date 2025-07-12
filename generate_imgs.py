@@ -12,7 +12,7 @@ from PIL import Image
 ctk.set_appearance_mode("System")  # Can be "System" (default), "Dark", "Light"
 ctk.set_default_color_theme("blue") # Can be "blue", "green", "dark-blue"
 
-def generate_images_gui(model, output_dir, num_images_str, progress_label, z_dim, resolution_step_str):
+def generate_images_gui(model, output_dir, num_images_str, progress_label, z_dim, resolution_step):
     """
     Generate images using the GAN model and save them to the output directory.
     This version includes GUI updates for progress and configurable Z_DIM and resolution step.
@@ -23,16 +23,6 @@ def generate_images_gui(model, output_dir, num_images_str, progress_label, z_dim
             raise ValueError("Number of images must be a positive integer.")
     except ValueError as e:
         messagebox.showerror("Invalid Input", f"Number of images must be an integer: {e}")
-        return
-
-    try:
-        # Assuming the resolution step is an integer from the log2 of the target resolution
-        # For a 256x256 image, the step is log2(256/4) = log2(64) = 6
-        resolution_step = int(resolution_step_str)
-        if resolution_step < 0: # Minimum step would typically be 0 for 4x4 or 1 for 8x8 etc.
-             raise ValueError("Resolution step cannot be negative.")
-    except ValueError as e:
-        messagebox.showerror("Invalid Input", f"Invalid resolution step: {e}")
         return
 
     os.makedirs(output_dir, exist_ok=True)
@@ -58,7 +48,20 @@ def generate_images_gui(model, output_dir, num_images_str, progress_label, z_dim
             generated_image = model(noise, 1, resolution_step)
             
             # Convert tensor to PIL Image for saving
-            array = generated_image.detach().cpu().numpy()[0][0] # Assuming grayscale output [C, H, W] -> [H, W] for grayscale
+            # Assuming grayscale output [C, H, W] -> [H, W] for grayscale if C=1
+            # If your model outputs color (e.g., 3 channels), you might need to adjust this:
+            # array = generated_image.detach().cpu().numpy()[0] # [C, H, W]
+            # scaled_array = ((array + 1) * 127.5).astype(np.uint8)
+            # if scaled_array.shape[0] == 1: # Grayscale
+            #     gray_image = Image.fromarray(scaled_array[0], 'L')
+            # elif scaled_array.shape[0] == 3: # RGB
+            #     rgb_image = Image.fromarray(np.transpose(scaled_array, (1, 2, 0)), 'RGB')
+            #     rgb_image.save(save_path)
+            #     continue # Skip grayscale save
+            # gray_image.save(save_path)
+
+            # Current logic for grayscale:
+            array = generated_image.detach().cpu().numpy()[0][0] 
             scaled_array = ((array + 1) * 127.5).astype(np.uint8)
             gray_image = Image.fromarray(scaled_array, 'L') # 'L' mode for grayscale
             
@@ -143,14 +146,11 @@ def main_gui():
     num_images_entry = ctk.CTkEntry(params_frame, textvariable=num_images_var, width=100)
     num_images_entry.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-    # Resolution Step
-    # Explain what this means to the user or provide a more intuitive way to select resolution
-    # For ProGAN, 'step' typically corresponds to log2(resolution / 4)
-    # e.g., 4x4 -> step 0, 8x8 -> step 1, ..., 256x256 -> step 6, 1024x1024 -> step 8
-    ctk.CTkLabel(params_frame, text="Resolution Step (e.g., 6 for 256x256):").grid(row=2, column=0, padx=10, pady=5, sticky="w")
-    resolution_step_var = ctk.StringVar(value=str(int(log2(256/4)))) # Default to 256x256 resolution
-    resolution_step_entry = ctk.CTkEntry(params_frame, textvariable=resolution_step_var, width=100)
-    resolution_step_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+    # Image Size (replaces Resolution Step)
+    ctk.CTkLabel(params_frame, text="Image Size (e.g., 256 for 256x256):").grid(row=2, column=0, padx=10, pady=5, sticky="w")
+    image_size_var = ctk.StringVar(value="256") # Default to 256x256 image size
+    image_size_entry = ctk.CTkEntry(params_frame, textvariable=image_size_var, width=100)
+    image_size_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
     
     # --- Progress Label ---
     progress_label = ctk.CTkLabel(app, text="Ready", text_color="blue", font=("Roboto", 14))
@@ -161,7 +161,7 @@ def main_gui():
         model_path = model_path_var.get()
         output_dir = output_dir_var.get()
         num_images_str = num_images_var.get()
-        resolution_step_str = resolution_step_var.get()
+        image_size_str = image_size_var.get() # Get the image size string
 
         try:
             current_z_dim = int(z_dim_var.get())
@@ -169,6 +169,16 @@ def main_gui():
                 raise ValueError("Z_DIM must be a positive integer.")
         except ValueError as e:
             messagebox.showerror("Invalid Input", f"Z_DIM must be an integer: {e}")
+            return
+
+        try:
+            image_size = int(image_size_str)
+            if image_size < 4 or (image_size & (image_size - 1) != 0): # Check if power of 2 and >= 4
+                raise ValueError("Image Size must be a power of 2 and at least 4 (e.g., 4, 8, 16, 32, ..., 1024).")
+            # Calculate resolution_step from image_size
+            resolution_step = int(log2(image_size / 4))
+        except ValueError as e:
+            messagebox.showerror("Invalid Input", f"Invalid Image Size: {e}")
             return
 
         if not model_path:
@@ -188,7 +198,8 @@ def main_gui():
             return
 
         if load_model_gui(model_path, model, progress_label):
-            generate_images_gui(model, output_dir, num_images_str, progress_label, current_z_dim, resolution_step_str)
+            # Pass the calculated resolution_step
+            generate_images_gui(model, output_dir, num_images_str, progress_label, current_z_dim, resolution_step)
 
     generate_button = ctk.CTkButton(app, text="Generate Images", command=start_generation, 
                                     font=("Roboto", 16, "bold"), height=50)

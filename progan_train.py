@@ -22,32 +22,44 @@ from tqdm import tqdm
 import json
 import torch.multiprocessing as mp
 from datetime import datetime
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 mp.set_start_method('spawn', force=True) # To avoid fork issues with DataLoader
 
 torch.backends.cudnn.benchmarks = True
 
-START_TRAIN_AT_IMG_SIZE = 512
-CURRENT_IMG_SIZE = 512
-DATASET = '/home/telmo/outDat/'
-CHECKPOINT_GEN = '/home/telmo/train_models/gan2/generator_size_512_18.pth'
-CHECKPOINT_CRITIC = '/home/telmo/train_models/gan2/critic_size_512_18.pth'
+START_TRAIN_AT_IMG_SIZE = 4
+CURRENT_IMG_SIZE = 4
+DATASET = '/home/telmo/Escritorio/TFG/Codigo/datos/outDatNodulosCropped'
+CHECKPOINT_GEN = 'train_models/gan5Calc/generator_size_512_299.pth'
+CHECKPOINT_CRITIC = 'train_models/gan5Calc/critic_size_512_299.pth'
 
-DEVICE = "cuda:1" if torch.cuda.is_available() else "cpu"
+LOG_DIR = "logs/gan5Calc/"
+IMGS_DIR = "train_imgs/gan5Calc/"
+MODELS_DIR = "train_models/gan5Calc/"
+
+os.makedirs(LOG_DIR, exist_ok=True)
+os.makedirs(IMGS_DIR, exist_ok=True)
+os.makedirs(MODELS_DIR, exist_ok=True)
+
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 SAVE_MODEL = True
-LOAD_MODEL = True
-LEARNING_RATE = 1e-4
-LEARNING_RATE_CRITIC = 3e-4
-BATCH_SIZES = [64, 64, 32, 32, 16, 16, 32, 24]  # Reducido para tamaños grandes
+LOAD_MODEL = False
+LEARNING_RATE = 1e-3
+LEARNING_RATE_CRITIC = 1e-3
+LEARNING_RATES = [1e-3, 1e-3, 1e-3, 1e-4, 1e-3, 1e-4, 1e-4, 1e-4]
+LEARNING_RATES_CRITIC = [1e-3, 1e-3, 1e-3, 1e-3, 1e-4, 3e-4, 3e-4, 3e-4]
+BATCH_SIZES = [128, 64, 32, 128, 64, 32, 28, 24]  # Reducido para tamaños grandes
 CHANNELS_IMG = 1
 Z_DIM = 512
 IN_CHANNELS = 512
-CRITIC_ITERATIONS = 13
+CRITIC_ITERATIONS = 20
 LAMBDA_GP = 20
-PROGRESSIVE_EPOCHS = [10, 10, 15, 20, 20, 40, 60, 80, 80]  # Más épocas para tamaños grandes
+PROGRESSIVE_EPOCHS = [10, 10, 20, 25, 60, 100, 150, 400, 120]  # Más épocas para tamaños grandes
 FIXED_NOISE = torch.randn(8, Z_DIM, 1, 1).to(DEVICE)
-NUM_WORKERS = 0
-START = 19 # Epoch to start training
+NUM_WORKERS = 8
+START = 0 # Epoch to start training
 
 
 def plot_to_tensorboard(
@@ -94,7 +106,7 @@ def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
 
 def load_checkpoint(checkpoint_file, model, optimizer, lr):
     print("=> Loading checkpoint")
-    checkpoint = torch.load(checkpoint_file, map_location="cuda:1", weights_only=True)
+    checkpoint = torch.load(checkpoint_file, map_location="cuda", weights_only=True)
     model.load_state_dict(checkpoint["state_dict"])
     optimizer.load_state_dict(checkpoint["optimizer"])
     for param_group in optimizer.param_groups:
@@ -124,10 +136,12 @@ def generate_examples(gen, steps, truncation=0.7, n=100):
 
 def get_loader(image_size):
     transform = transforms.Compose([
-        transforms.Resize((image_size, image_size)),  # Asegurar tamaño correcto
-        transforms.Grayscale(num_output_channels=1),  # Convertir a escala de grises
-        transforms.ToTensor(), # Convertir a tensor
-        transforms.Normalize([0.5], [0.5]),  # Normalización [-1,1]
+        transforms.Resize((image_size, image_size)),  
+        transforms.Grayscale(num_output_channels=1),  
+        transforms.RandomAffine(degrees=5, translate=(0.02, 0.02), scale=(0.98, 1.02)),
+        transforms.ColorJitter(brightness=0.05, contrast=0.05),
+        transforms.ToTensor(),
+        transforms.Normalize([0.5], [0.5]),  # Escala a [-1, 1]
     ])
     batch_size = BATCH_SIZES[int(log2(image_size / 4))]
     dataset = datasets.ImageFolder(root=DATASET, transform=transform)
@@ -167,7 +181,7 @@ def train_fn(
         # which is equivalent to minimizing the negative of the expression
         noise = torch.randn(cur_batch_size, Z_DIM, 1, 1).to(DEVICE)
 
-        with torch.amp.autocast(device_type='cuda:1', dtype=torch.float32):
+        with torch.amp.autocast(device_type='cuda', dtype=torch.float32):
             fake = gen(noise, alpha, step)
             critic_real = critic(real, alpha, step)
             critic_fake = critic(fake.detach(), alpha, step)
@@ -184,7 +198,7 @@ def train_fn(
         scaler_critic.update()
 
         # Train Generator: max E[critic(gen_fake)] <-> min -E[critic(gen_fake)]
-        with torch.amp.autocast(device_type='cuda:1', dtype=torch.float32):
+        with torch.amp.autocast(device_type='cuda', dtype=torch.float32):
             gen_fake = critic(fake, alpha, step)
             loss_gen = -torch.mean(gen_fake)
 
@@ -242,7 +256,7 @@ if __name__ == "__main__":
     scaler_critic = torch.amp.GradScaler()
     scaler_gen = torch.amp.GradScaler()
 
-    writer = SummaryWriter(f"logs/gan2")
+    writer = SummaryWriter(log_dir=LOG_DIR)
     if LOAD_MODEL:
         load_checkpoint(
             CHECKPOINT_GEN, gen, opt_gen, LEARNING_RATE,
@@ -264,12 +278,16 @@ if __name__ == "__main__":
         print(f"\nEntrenando en tamaño {img_size}x{img_size}")
         print(f"Batch size: {BATCH_SIZES[step]}")
         print(f"Épocas programadas: {num_epochs}")
-        log_file = os.path.join("logs/gan2", "train_log.txt")
+        log_file = os.path.join(LOG_DIR, "train_log.txt")
         with open(log_file, "a") as f:
             f.write(f"Image size: {img_size}\n"
                     f"\tEpocas {num_epochs}\n")
         total_avg_loss_gen = 0
         total_avg_loss_critic = 0
+        LEARNING_RATE = LEARNING_RATES[step]
+        LEARNING_RATE_CRITIC = LEARNING_RATES_CRITIC[step]
+        opt_gen.param_groups[0]["lr"] = LEARNING_RATE
+        opt_critic.param_groups[0]["lr"] = LEARNING_RATE_CRITIC
         for epoch in range(START, num_epochs):
             print(f"\nÉpoca [{epoch+1}/{num_epochs}] - Tamaño {img_size}")
             
@@ -300,17 +318,20 @@ if __name__ == "__main__":
                 plt.axis('off')
                 plt.tight_layout(pad=0)
                 plt.imshow(z.detach().cpu().numpy()[0][0], cmap='gray')
-                os.makedirs('train_imgs/gan2', exist_ok=True)
-                plt.savefig(f'train_imgs/gan2/mass__size_{img_size}_epoch_{epoch}_{i}.png', bbox_inches='tight', pad_inches=0)
+                os.makedirs(IMGS_DIR, exist_ok=True)
+                plt.savefig(f'{IMGS_DIR}/mass__size_{img_size}_epoch_{epoch}_{i}.png', bbox_inches='tight', pad_inches=0)
 
-            if SAVE_MODEL and (epoch % 3 == 0 or epoch % 10 == 0 or epoch == num_epochs - 1):
+            if (SAVE_MODEL and ((step > 5 and (epoch % 3 == 0 or epoch % 10 == 0 or epoch == num_epochs - 1)) or (step <= 5 and (epoch % 10 == 0 or epoch == num_epochs - 1)))):
                 print("Saving model...")
-                os.makedirs('train_models', exist_ok=True)
-                generator_file = os.path.join('train_models/gan2', f"generator_size_{img_size}_{epoch}.pth")
-                critic_file = os.path.join('train_models/gan2', f"critic_size_{img_size}_{epoch}.pth")
+                os.makedirs(MODELS_DIR, exist_ok=True)
+                generator_file = os.path.join(MODELS_DIR, f"generator_size_{img_size}_{epoch}.pth")
+                critic_file = os.path.join(MODELS_DIR, f"critic_size_{img_size}_{epoch}.pth")
                 save_checkpoint(gen, opt_gen, filename=generator_file)
                 save_checkpoint(critic, opt_critic, filename=critic_file)
             # Accumulate average losses for critic and generator
+            if epoch % 60 == 0 and step > 5:
+                CRITIC_ITERATIONS += 5
+        
             total_avg_loss_critic += avg_loss_critic
             total_avg_loss_gen += avg_loss_gen
             torch.cuda.empty_cache()
