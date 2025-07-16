@@ -2,6 +2,9 @@
 128imgs.png
 imgs_128/
 train_imgs/
+generated_images/
+generated_nodules/
+docker/
 
 # Ignorar caché de Python
 __pycache__/
@@ -16,6 +19,8 @@ sync_remote.sh
 logs/*
 !logs/gan1/*.txt
 !logs/gan2/*.txt
+!logs/gan4NodulesCropped_finetunning/*.txt
+!logs/gan5Calc/*.txt
 
 # Excluir este script y el .gitignore generado
 git.sh
