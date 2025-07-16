@@ -44,12 +44,18 @@ You can easily generate synthetic images using the included graphical interface.
 
 ---
 
-## 📥 Models to download
+## 📥 Models to Download
 
+You can access and download the trained ProGAN models for mammography from the following links on Hugging Face:
 
-You can access and download the required models through the following link:
+* **ProGAN-Mammography-Nodules**
+    [![Download Nodules Model](https://img.shields.io/badge/Download-Nodules_Model-blue?logo=huggingface&logoColor=white)](https://huggingface.co/T3lm0/ProGAN-Mammography-Nodules)
 
-[![Download Models](https://img.shields.io/badge/Download-Models-blue)](https://tinyurl.com/tfgtelmo)
+* **ProGAN-Mammography-Calcifications**
+    [![Download Calcifications Model](https://img.shields.io/badge/Download-Calcifications_Model-blue?logo=huggingface&logoColor=white)](https://huggingface.co/T3lm0/ProGAN-Mammography-Calcifications)
+
+* **ProGAN-Mammography-NonLesion-General**
+    [![Download Non-Lesion Model](https://img.shields.io/badge/Download-Non--Lesion_Model-blue?logo=huggingface&logoColor=white)](https://huggingface.co/T3lm0/ProGAN-Mammography-NonLesion-General)
 
 ---
 
