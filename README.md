@@ -136,16 +136,14 @@ This table shows how adding synthetic images affects performance.
 
 ## 🖼️ Example Synthetic Images  
 
-Below are examples of synthetic mammography images generated with **ProGAN**:
+Below are examples of synthetic mammography images generated with **ProGAN** (Calcification-Nodules):
 
 <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
     <figure style="text-align: center;">
         <img src="images_md/calcifications_example.png" alt="Synthetic Calcifications" width="300"/>
-        <figcaption><b>Calcifications</b></figcaption>
     </figure>
     <figure style="text-align: center;">
         <img src="images_md/nodules_example.png" alt="Synthetic Nodules" width="300"/>
-        <figcaption><b>Nodules</b></figcaption>
     </figure>
 </div>
 
