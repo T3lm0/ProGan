@@ -43,7 +43,7 @@ You can easily generate synthetic images using the included graphical interface.
 3. The generated images will appear in the selected output folder.
 
 ---
-## 📊 Performance Comparison  
+## 📊 Performance Comparison: Nodules  
 **Training With vs. Without Synthetic Images**
 
 This table shows how adding synthetic images affects performance.  
@@ -134,6 +134,106 @@ This table shows how adding synthetic images affects performance.
 - 🌟 **CustomResNetBinary50** had the biggest boost in **Precision (+33.99%)** and **Accuracy (+12.64%)**.  
 - ❌ Most architectures lost **Recall**, suggesting synthetic images trade sensitivity for precision.  
 
+## 📊 Performance Comparison: Calcifications  
+**Training With vs. Without Synthetic Images**
+
+This table shows how adding synthetic images affects performance.  
+
+<table>
+<thead>
+<tr>
+<th>Architecture</th>
+<th>Weighted-Score (%)</th>
+<th>Precision (%)</th>
+<th>Recall (%)</th>
+<th>F1-Score (%)</th>
+<th>AUC-ROC (%)</th>
+<th>Accuracy (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><b>CustomDenseNet</b></td>
+<td>✔️ +0.39</td>
+<td>❌ -3.1</td>
+<td>✔️ +2.5</td>
+<td>❌ -0.7</td>
+<td>❌ -0.06</td>
+<td>❌ -1.44</td>
+</tr>
+<tr>
+<td><b>CustomMobileNetV3</b></td>
+<td>❌ -2.05</td>
+<td>✔️ +1.36</td>
+<td>❌ -3.75</td>
+<td>❌ -1.66</td>
+<td>❌ -1.19</td>
+<td>✔️ +0.19</td>
+</tr>
+<tr>
+<td><b>CustomResNetBinary</b></td>
+<td>✔️ +0.40</td>
+<td>✔️ +7.51</td>
+<td>❌ -1.81</td>
+<td>✔️ +1.11</td>
+<td>✔️ +0.78</td>
+<td>✔️ +2.17</td>
+</tr>
+<tr>
+<td><b>CustomResNetBinary34</b></td>
+<td>✔️ +1.79</td>
+<td>✔️ +6.59</td>
+<td>✔️ +0.14</td>
+<td>✔️ +2.84</td>
+<td>✔️ +1.52</td>
+<td>✔️ +2.27</td>
+</tr>
+<tr>
+<td><b>CustomResNetBinary50</b></td>
+<td>✔️ +0.92</td>
+<td>✔️ +8.26</td>
+<td>❌ -1.67</td>
+<td>✔️ +2.22</td>
+<td>✔️ +0.97</td>
+<td>✔️ +2.39</td>
+</tr>
+<tr>
+<td><b>EfficientNetB0</b></td>
+<td>❌ -1.62</td>
+<td>✔️ +1.32</td>
+<td>❌ -2.92</td>
+<td>❌ -1.37</td>
+<td>❌ -0.94</td>
+<td>✔️ +0.13</td>
+</tr>
+<tr>
+<td><b>VGG16</b></td>
+<td>❌ -1.25</td>
+<td>✔️ +1.24</td>
+<td>❌ -2.36</td>
+<td>❌ -1.04</td>
+<td>❌ -0.66</td>
+<td>✔️ +0.26</td>
+</tr>
+<tr>
+<td><b>ResNet50</b></td>
+<td>❌ -1.41</td>
+<td>✔️ +9.37</td>
+<td>❌ -8.19</td>
+<td>✔️ +1.35</td>
+<td>✔️ +1.08</td>
+<td>✔️ +0.61</td>
+</tr>
+</tbody>
+</table>
+
+---
+
+### Interpretation of Results
+
+The results are mixed. There is a **general improvement in Precision**, suggesting that models are more reliable when detecting calcifications.  
+However, there is a **significant drop in Recall** for most architectures, meaning more real calcifications are missed.  
+Overall performance, measured by the **Weighted-Score**, shows both improvements and setbacks.
 ## 🖼️ Example Synthetic Images  
 
 Below are examples of synthetic mammography images generated with **ProGAN** (Calcification-Nodules):
