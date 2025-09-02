@@ -3,6 +3,8 @@
 imgs_128/
 train_imgs/
 generated_images/
+generated_cal/
+generated_calc/
 generated_nodules/
 docker/
 
